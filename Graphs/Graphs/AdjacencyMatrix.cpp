@@ -22,7 +22,7 @@ AdjacencyMatrix::AdjacencyMatrix(const char* nazwaPliku)
 		string buf;
 		int liczbaKolumn;
 		getline(plik, buf);
-		liczbaKolumn = buf.size() / 2;
+		liczbaKolumn = buf.size() / 2+1;
 		plik.seekg(0);
 
 		// liczy liczbe wierszy
