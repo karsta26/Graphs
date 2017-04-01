@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 using namespace std;
 
 
@@ -10,11 +11,11 @@ IncidenceMatrix::IncidenceMatrix() : _V(0), _E(0), _matrix(NULL)
 
 IncidenceMatrix::IncidenceMatrix(AdjacencyMatrix& sas)
 {
-	_V = sas.liczbaWierzcholkow();
-	_E = sas.liczbaKrawedzi();
-	zarezerwujPamiec(_V, _E);
+	_V = sas.getV();
+	_E = sas.getE();
+	setMemory(_V, _E);
 	int krawedz = 0;
-	int** macSas = sas.zwrocMacierz();
+	int** macSas = sas.getMatrix();
 	for (int i = 0; i<_V - 1; i++) {
 		for (int j = i + 1; j<_V; j++) {
 			if (macSas[i][j] == 1)
@@ -56,7 +57,7 @@ void IncidenceMatrix::wypiszMacierz() const
 	}
 }
 
-void IncidenceMatrix::zarezerwujPamiec(const int x, const int y)
+void IncidenceMatrix::setMemory(const int x, const int y)
 {
 	_matrix = new int*[x];
 	for (int i = 0; i < x; ++i)
@@ -65,4 +66,24 @@ void IncidenceMatrix::zarezerwujPamiec(const int x, const int y)
 	for (int i = 0; i < x; ++i)
 		for (int j = 0; j < y; ++j)
 			_matrix[i][j] = 0;
+}
+
+std::string IncidenceMatrix::getString() const
+{
+	stringstream toGive("");
+	toGive << endl << "Macierz incydencji" << endl;
+	toGive << " ";
+	for (int i = 0; i < _E; ++i)
+	{
+		toGive << "  " << i;
+	}
+	toGive << endl << string(_E * 3 + 1, '-') << endl;
+	for (int i = 0; i < _V; ++i)
+	{
+		toGive << i << "/ ";
+		for (int j = 0; j < _E; ++j)
+			toGive << _matrix[i][j] << "  ";
+		toGive << endl;
+	}
+	return toGive.str();
 }

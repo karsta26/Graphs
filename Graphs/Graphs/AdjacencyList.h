@@ -10,12 +10,13 @@ public:
 	// konwersja z macierzy incydencji
 	AdjacencyList(IncidenceMatrix& mac);
 	void wypiszListe() const;
-	std::vector< std::list<int> > zwrocListe() const
+	std::vector< std::list<int> > getList() const
 	{
 		return _V;
 	}
 	// czyta dane z klawiatury
-	void wczytajDane();
+	void setDataFromKeyboard();
+	std::string getString() const;
 
 private:
 	std::vector< std::list<int> > _V;

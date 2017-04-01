@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -12,10 +13,10 @@ AdjacencyMatrix::AdjacencyMatrix() : _V(0), _E(0), _matrix(NULL)
 {}
 
 // dziala tylko gdy wczystko jest ok w pliku
-AdjacencyMatrix::AdjacencyMatrix(const char* nazwaPliku)
+AdjacencyMatrix::AdjacencyMatrix(const char* fileName)
 {
 	ifstream plik;
-	plik.open(nazwaPliku);
+	plik.open(fileName);
 	if (plik)
 	{
 		// liczy liczbe kolumn
@@ -43,19 +44,19 @@ AdjacencyMatrix::AdjacencyMatrix(const char* nazwaPliku)
 		{
 			cout << "Blad czytania z pliku: liczba wierszy jest rozna od liczby kolumn" << endl;
 			plik.close();
-			zarezerwujPamiec(liczbaWierszy, liczbaWierszy);
+			setMemory(liczbaWierszy, liczbaWierszy);
 		}
 		else
 		{
 			_V = liczbaWierszy;
 
-			zarezerwujPamiec(liczbaWierszy, liczbaKolumn);
+			setMemory(liczbaWierszy, liczbaKolumn);
 
 			for (int i = 0; i < liczbaWierszy; i++)
 				for (int j = 0; j < liczbaKolumn; j++)
 					plik >> _matrix[i][j];
 
-			policzKrawedzie();
+			countEdges();
 			plik.close();
 		}
 	}
@@ -66,6 +67,28 @@ AdjacencyMatrix::AdjacencyMatrix(const char* nazwaPliku)
 		_V = 0;
 		_matrix = NULL;
 	}
+}
+
+AdjacencyMatrix::AdjacencyMatrix(const string strMatrix)
+{
+	string myDelim("\n");
+	int positionOfNewLine = strMatrix.find_first_of(myDelim);
+	_V =  positionOfNewLine;
+
+	stringstream stringHelper(strMatrix);
+
+	setMemory(_V, _V);
+
+	for (int i = 0; i < _V; i++)
+		for (int j = 0; j < _V; j++)
+		{
+			char tmpChar;
+			stringHelper >> tmpChar;
+			if (tmpChar == '\\n')
+				stringHelper >> tmpChar;
+			_matrix[i][j] = int(tmpChar) -48;
+		}
+	countEdges();
 }
 
 
@@ -101,12 +124,12 @@ void AdjacencyMatrix::wypiszMacierz() const
 
 }
 
-void AdjacencyMatrix::wczytajDane()
+void AdjacencyMatrix::setDateFromKeyboard()
 {
 	cout << endl << "Wczytywanie macierzy sasiedztwa" << endl;
 	cout << "Podaj liczbe wierzcholkow V: ";
 	cin >> _V;
-	zarezerwujPamiec(_V, _V);
+	setMemory(_V, _V);
 	cout << endl << "Podaj co z czym sasiaduje np. 1 2, czyli wierzcholek 1 sasiaduje z wierzcholkiem 2" << endl;
 	cout << "Zakoncz piszac  0 0" << endl;
 	int x, y;
@@ -134,11 +157,11 @@ void AdjacencyMatrix::wczytajDane()
 
 		cin >> x >> y;
 	}
-	policzKrawedzie();
+	countEdges();
 
 }
 
-void AdjacencyMatrix::zarezerwujPamiec(const int x, const int y)
+void AdjacencyMatrix::setMemory(const int x, const int y)
 {
 	_matrix = new int*[x];
 	for (int i = 0; i < y; ++i)
@@ -149,7 +172,7 @@ void AdjacencyMatrix::zarezerwujPamiec(const int x, const int y)
 			_matrix[i][j] = 0;
 }
 
-void AdjacencyMatrix::policzKrawedzie()
+void AdjacencyMatrix::countEdges()
 {
 	int sum = 0;
 	for (int i = 0; i < _V; ++i)
@@ -158,15 +181,38 @@ void AdjacencyMatrix::policzKrawedzie()
 	_E = sum / 2;
 }
 
-AdjacencyMatrix::AdjacencyMatrix(AdjacencyList* listaSasiedztwa)
+std::string AdjacencyMatrix::getString() const
 {
-	std::vector< std::list<int> > lista = listaSasiedztwa->zwrocListe();
+	stringstream toGive("");
+	if (_matrix)
+	{
+		toGive << endl << "Macierz sasiedztwa" << endl;
+		toGive << " ";
+		for (int i = 0; i < _V; ++i)
+		{
+			toGive << "  " << i;
+		}
+		toGive << endl << string(_V * 3 + 1, '-') << endl;
+		for (int i = 0; i < _V; ++i)
+		{
+			toGive << i << "/ ";
+			for (int j = 0; j < _V; ++j)
+				toGive << _matrix[i][j] << "  ";
+			toGive << endl;
+		}
+	}
+	return toGive.str();
+}
+
+AdjacencyMatrix::AdjacencyMatrix(AdjacencyList* Adjacencylist)
+{
+	std::vector< std::list<int> > lista = Adjacencylist->getList();
 	_V = lista.size();
-	zarezerwujPamiec(_V, _V);
+	setMemory(_V, _V);
 	for (unsigned i = 0; i<lista.size(); i++) {
 		for (list<int>::const_iterator iter = lista[i].begin(); iter != lista[i].end(); iter++) {
 			_matrix[i][*iter] = 1;
 		}
 	}
-	policzKrawedzie();
+	countEdges();
 }

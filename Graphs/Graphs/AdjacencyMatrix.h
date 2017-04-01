@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 class AdjacencyList;
 
@@ -7,29 +8,33 @@ class AdjacencyMatrix
 public:
 	AdjacencyMatrix();
 	// konstruktor macierzy z pliku
-	AdjacencyMatrix(const char* nazwaPliku);
+	AdjacencyMatrix(const char* fileName);
+	// konstruktor macierzy ze stringu
+	AdjacencyMatrix(const std::string strMatrix);
 	// konwersja z listy sasiedztwa
-	AdjacencyMatrix(AdjacencyList* listaSasiedztwa);
+	AdjacencyMatrix(AdjacencyList* Adjacencylist);
 	// destruktor usuwa tablice dynamiczna
 	~AdjacencyMatrix();
 	// wypisuje macierz na ekran
 	void wypiszMacierz() const;
-	int liczbaWierzcholkow() const
+	int getV() const
 	{
 		return _V;
 	}
-	int liczbaKrawedzi() const
+	int getE() const
 	{
 		return _E;
 	}
-	int** zwrocMacierz() const
+	int** getMatrix() const
 	{return _matrix;}
 	// wczytuje dane z klawiatury
-	void wczytajDane();
+	void setDateFromKeyboard();
 	// rezerwuje pamiec na tablice 
-	void zarezerwujPamiec(const int x, const int y);
+	void setMemory(const int x, const int y);
 	// liczy krawedzie w grafie
-	void policzKrawedzie();
+	void countEdges();
+	// zwraca macierz jako string
+	std::string getString() const;
 
 private:
 	// liczba wierzcholkow

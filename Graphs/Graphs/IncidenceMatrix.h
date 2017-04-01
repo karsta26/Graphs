@@ -11,20 +11,21 @@ public:
 
 	// wypisuje macierz na ekran
 	void wypiszMacierz() const;
-	int** zwrocMacierz() const
+	int** getMatrix() const
 	{
 		return _matrix;
 	}
-	int liczbaWierzcholkow() const
+	int getV() const
 	{
 		return _V;
 	}
-	int liczbaKrawedzi() const
+	int getE() const
 	{
 		return _E;
 	}
 	// rezerwuje pamiec na tablice 
-	void zarezerwujPamiec(const int x, const int y);
+	void setMemory(const int x, const int y);
+	std::string getString() const;
 
 
 private:

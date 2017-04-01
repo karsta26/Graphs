@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <sstream>
 
 using namespace std;
 
@@ -10,9 +11,9 @@ AdjacencyList::AdjacencyList()
 
 AdjacencyList::AdjacencyList(IncidenceMatrix& mac)
 {
-	int** macierz = mac.zwrocMacierz();
-	int E = mac.liczbaKrawedzi();
-	int V = mac.liczbaWierzcholkow();
+	int** macierz = mac.getMatrix();
+	int E = mac.getE();
+	int V = mac.getV();
 
 	// wstepna inicjalizacja wektorow
 	for (int i = 0; i < V; i++)
@@ -49,7 +50,7 @@ void AdjacencyList::wypiszListe() const
 }
 
 // cos zle dziala
-void AdjacencyList::wczytajDane()
+void AdjacencyList::setDataFromKeyboard()
 {
 	cout << endl << "Wczytywanie listy sasiedztwa" << endl;
 	cout << "Podaj liczbe krawedzi V: ";
@@ -98,4 +99,19 @@ void AdjacencyList::wczytajDane()
 		_V[i].unique();
 	}
 
+}
+
+std::string AdjacencyList::getString() const
+{
+	stringstream toGive("");
+	toGive << endl << "Lista Sasiedztwa" << endl;
+	for (unsigned i = 0; i<_V.size(); i++) {
+		toGive << i << ": ";
+		for (list<int>::const_iterator iter = _V[i].begin(); iter != _V[i].end(); iter++) {
+			toGive << *iter << " -> ";
+		}
+		toGive << endl;
+	}
+
+	return toGive.str();
 }
