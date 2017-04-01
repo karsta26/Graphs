@@ -6,20 +6,20 @@
 class AdjacencyList
 {
 public:
+	// konstruktor domyslny
 	AdjacencyList();
 	// konwersja z macierzy incydencji
-	AdjacencyList(IncidenceMatrix& mac);
-	void wypiszListe() const;
+	AdjacencyList(IncidenceMatrix& incMatrix);
+	// zwraca liste
 	std::vector< std::list<int> > getList() const
 	{
-		return _V;
+		return _list;
 	}
-	// czyta dane z klawiatury
-	void setDataFromKeyboard();
+	// zwraca liste jako string
 	std::string getString() const;
 
 private:
-	std::vector< std::list<int> > _V;
+	std::vector< std::list<int> > _list;
 
 };
 

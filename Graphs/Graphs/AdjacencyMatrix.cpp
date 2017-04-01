@@ -12,52 +12,63 @@ using namespace std;
 AdjacencyMatrix::AdjacencyMatrix() : _V(0), _E(0), _matrix(NULL)
 {}
 
+AdjacencyMatrix::AdjacencyMatrix(int ** matrixOrigin, int sizeOfMatrix)
+{
+	_V = sizeOfMatrix;
+	setMemory(_V, _V);
+	for (int i = 0; i < _V; ++i)
+		for (int j = 0; j < _V; ++j)
+			_matrix[i][j] = matrixOrigin[i][j];
+
+	countEdges();
+}
+
 // dziala tylko gdy wczystko jest ok w pliku
 AdjacencyMatrix::AdjacencyMatrix(const char* fileName)
 {
-	ifstream plik;
-	plik.open(fileName);
-	if (plik)
+	ifstream file;
+	file.open(fileName);
+	if (file)
 	{
 		// liczy liczbe kolumn
 		string buf;
-		int liczbaKolumn;
-		getline(plik, buf);
-		liczbaKolumn = buf.size() / 2+1;
-		plik.seekg(0);
+		int numOfColumns;
+		getline(file, buf);
+		numOfColumns = buf.size()/2 + 1;
+		file.seekg(0);
 
 		// liczy liczbe wierszy
-		int ile = 0;
-		string asd;
+		int tmpNumber = 0;
+		string tmpString;
 		while (1)
 		{
-			if (plik.eof())
+			if (file.eof())
 				break;
-			getline(plik, asd);
-			ile++;
+			getline(file, tmpString);
+			tmpNumber++;
 		}
 
-		plik.seekg(0);
+		file.seekg(0);
 
-		int liczbaWierszy = ile;
-		if (liczbaKolumn != liczbaWierszy)
+		int numOfRows =  tmpNumber;
+		if (numOfColumns != numOfRows)
 		{
 			cout << "Blad czytania z pliku: liczba wierszy jest rozna od liczby kolumn" << endl;
-			plik.close();
-			setMemory(liczbaWierszy, liczbaWierszy);
+			file.close();
+			setMemory(1, 1);
 		}
 		else
 		{
-			_V = liczbaWierszy;
+			_V = numOfRows;
 
-			setMemory(liczbaWierszy, liczbaKolumn);
+			setMemory(numOfRows, numOfColumns);
 
-			for (int i = 0; i < liczbaWierszy; i++)
-				for (int j = 0; j < liczbaKolumn; j++)
-					plik >> _matrix[i][j];
+			for (int i = 0; i < numOfRows; ++i)
+				for (int j = 0; j < numOfColumns; ++j)
+					file >> _matrix[i][j];
 
 			countEdges();
-			plik.close();
+			file.close();
 		}
 	}
 	else
@@ -79,8 +90,8 @@ AdjacencyMatrix::AdjacencyMatrix(const string strMatrix)
 
 	setMemory(_V, _V);
 
-	for (int i = 0; i < _V; i++)
-		for (int j = 0; j < _V; j++)
+	for (int i = 0; i < _V; ++i)
+		for (int j = 0; j < _V; ++j)
 		{
 			char tmpChar;
 			stringHelper >> tmpChar;
@@ -100,65 +111,6 @@ AdjacencyMatrix::~AdjacencyMatrix()
 			delete[] _matrix[i];
 		delete[] _matrix;
 	}
-}
-
-void AdjacencyMatrix::wypiszMacierz() const
-{
-	if (_matrix)
-	{
-		cout << endl << "Macierz sasiedztwa" << endl;
-		cout << " ";
-		for (int i = 0; i < _V; ++i)
-		{
-			cout << "  " << i;
-		}
-		cout << endl << string(_V * 3 + 1, '-') << endl;
-		for (int i = 0; i < _V; ++i)
-		{
-			cout << i << "/ ";
-			for (int j = 0; j < _V; ++j)
-				cout << _matrix[i][j] << "  ";
-			cout << endl;
-		}
-	}
-
-}
-
-void AdjacencyMatrix::setDateFromKeyboard()
-{
-	cout << endl << "Wczytywanie macierzy sasiedztwa" << endl;
-	cout << "Podaj liczbe wierzcholkow V: ";
-	cin >> _V;
-	setMemory(_V, _V);
-	cout << endl << "Podaj co z czym sasiaduje np. 1 2, czyli wierzcholek 1 sasiaduje z wierzcholkiem 2" << endl;
-	cout << "Zakoncz piszac  0 0" << endl;
-	int x, y;
-	cin >> x >> y;
-	while (x != 0 || y != 0)
-	{
-		if (x >= _V || y >= _V || x< 0 || y<0)
-		{
-			cout << "Blad danych! Tylko wartosci mniejsze od liczby krawedzi!" << endl;
-		}
-		else
-		{
-			if (_matrix[x][y] == 1)
-				cout << "Taka krawedz juz istnieje!" << endl;
-			else if (x == y)
-			{
-				cout << "To ma byc graf prosty!" << endl;
-			}
-			else
-			{
-				_matrix[x][y] = 1;
-				_matrix[y][x] = 1;
-			}
-		}
-
-		cin >> x >> y;
-	}
-	countEdges();
-
 }
 
 void AdjacencyMatrix::setMemory(const int x, const int y)
@@ -181,12 +133,12 @@ void AdjacencyMatrix::countEdges()
 	_E = sum / 2;
 }
 
-std::string AdjacencyMatrix::getString() const
+string AdjacencyMatrix::getString() const
 {
 	stringstream toGive("");
 	if (_matrix)
 	{
-		toGive << endl << "Macierz sasiedztwa" << endl;
+		toGive << endl << "Adjacency Matrix" << endl;
 		toGive << " ";
 		for (int i = 0; i < _V; ++i)
 		{
@@ -206,11 +158,11 @@ std::string AdjacencyMatrix::getString() const
 
 AdjacencyMatrix::AdjacencyMatrix(AdjacencyList* Adjacencylist)
 {
-	std::vector< std::list<int> > lista = Adjacencylist->getList();
-	_V = lista.size();
+	vector< list<int> > myList = Adjacencylist->getList();
+	_V = myList.size();
 	setMemory(_V, _V);
-	for (unsigned i = 0; i<lista.size(); i++) {
-		for (list<int>::const_iterator iter = lista[i].begin(); iter != lista[i].end(); iter++) {
+	for (unsigned i = 0; i<myList.size(); ++i) {
+		for (list<int>::const_iterator iter = myList[i].begin(); iter != myList[i].end(); ++iter) {
 			_matrix[i][*iter] = 1;
 		}
 	}

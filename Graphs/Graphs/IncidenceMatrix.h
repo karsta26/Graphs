@@ -4,27 +4,30 @@
 class IncidenceMatrix
 {
 public:
+	// konstruktor domyslny
 	IncidenceMatrix();
 	// konwersja z macierzy sasiedztwa
 	IncidenceMatrix(AdjacencyMatrix& sas);
+	// usuwa pamiec zaalokowana dynamicznie
 	~IncidenceMatrix();
-
-	// wypisuje macierz na ekran
-	void wypiszMacierz() const;
+	// zwraca macierz incydencji
 	int** getMatrix() const
 	{
 		return _matrix;
 	}
+	// zwraca liczbe wierzcholkow
 	int getV() const
 	{
 		return _V;
 	}
+	// zwraca liczbe krawedzi
 	int getE() const
 	{
 		return _E;
 	}
 	// rezerwuje pamiec na tablice 
 	void setMemory(const int x, const int y);
+	// zwraca macierz jako string
 	std::string getString() const;
 
 

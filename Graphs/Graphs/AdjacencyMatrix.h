@@ -6,7 +6,10 @@ class AdjacencyList;
 class AdjacencyMatrix
 {
 public:
+	// konstruktor domyslny
 	AdjacencyMatrix();
+	// konstruktor macierzy z tablicy 
+	AdjacencyMatrix(int** matrixOrigin, int sizeOfMatrix);
 	// konstruktor macierzy z pliku
 	AdjacencyMatrix(const char* fileName);
 	// konstruktor macierzy ze stringu
@@ -15,20 +18,19 @@ public:
 	AdjacencyMatrix(AdjacencyList* Adjacencylist);
 	// destruktor usuwa tablice dynamiczna
 	~AdjacencyMatrix();
-	// wypisuje macierz na ekran
-	void wypiszMacierz() const;
+	// zwraca liczbe wierzcholkow
 	int getV() const
 	{
 		return _V;
 	}
+	// zwraca liczbe krawedzi
 	int getE() const
 	{
 		return _E;
 	}
+	// zwraca macierz sasiedztwa
 	int** getMatrix() const
 	{return _matrix;}
-	// wczytuje dane z klawiatury
-	void setDateFromKeyboard();
 	// rezerwuje pamiec na tablice 
 	void setMemory(const int x, const int y);
 	// liczy krawedzie w grafie
