@@ -6,8 +6,8 @@
 class AdjacencyList
 {
 public:
-	// konstruktor domyslny
-	AdjacencyList();
+	// konstruktor
+	AdjacencyList(const int numOfVertex);
 	// konwersja z macierzy incydencji
 	AdjacencyList(IncidenceMatrix& incMatrix);
 	// zwraca liste
@@ -17,9 +17,16 @@ public:
 	}
 	// zwraca liste jako string
 	std::string getString() const;
+	// dodaje krawedz'
+	bool addEdge(const int vertexOne, const int vertexTwo);
 
 private:
+	// lista
 	std::vector< std::list<int> > _list;
+	// liczba wierzcholkow
+	int _V;
+	// liczba krawedzi
+	int _E;
 
 };
 
