@@ -7,6 +7,8 @@
 #include <sstream>
 #include <numeric>
 #include <algorithm>
+#include <map>
+#include <iterator>
 
 bool isGraphString(std::string vertexList);
 AdjacencyList constructGraph(std::string vertexList);
@@ -30,8 +32,9 @@ int main()
 	AdjacencyMatrix adja2(fileName);
 	cout << adja2.getString();
 	*/
-
-	AdjacencyList myList = constructGraph("1 1 2 3 3 4 4 6 8 4 2 1 2 1");
+	string ver("2 2 2 2");
+	cout << isGraphString(ver);
+	AdjacencyList myList = constructGraph(ver);
 	cout << myList.getString();
 	
 
@@ -95,6 +98,16 @@ bool isGraphString(std::string vertexList)
 	// gdy ilosc wierzcholkow = 0
 	return false;
 }
+struct vertex
+{
+	int index;
+	int degree;
+};
+
+bool cmp(const vertex &p1, const vertex &p2)
+{
+	return p1.degree > p2.degree;
+}
 
 AdjacencyList constructGraph(std::string vertexList)
 {
@@ -116,41 +129,45 @@ AdjacencyList constructGraph(std::string vertexList)
 	// inicjalizacja listy
 	AdjacencyList myList(vertexTab.size());
 
-	// sortowanie od najwiekszego
-	sort(vertexTab.begin(), vertexTab.end());
-	reverse(vertexTab.begin(), vertexTab.end());
+	vertex tmp;
+
+	vector<vertex> typeHelp;
+	for (unsigned i = 0; i < vertexTab.size(); ++i)
+		typeHelp.push_back(tmp);
+
+	for (unsigned i = 0; i < vertexTab.size(); ++i)
+	{
+		typeHelp[i].index = i;
+		typeHelp[i].degree = vertexTab[i];
+	}
+	
+	sort(typeHelp.begin(), typeHelp.end(), cmp);
 	
 	// glowna petla
-	for (unsigned i = 0; i < vertexTab.size() - 1; ++i)
+	while(typeHelp[0].degree != 0)
 	{
+		int i = 0;
 		// pobiera element obecnie rozpatrywany
-		int size = vertexTab[i];
-		// jesli jego stopien == 0 to sprawdza czy dalej tez sa zera, idzie do konca 
-		// jesli jest jakis niezerowy to sie ustawia na niego
-		while (size == 0 && i < vertexTab.size() - 1){
-			i++;
-			size = vertexTab[i];
-		}
-		// nastepny wierzcholek po nie zerowym 
+		int size = typeHelp[i].degree;
+
+		// nastepny wierzcholek
 		int next = i + 1;
 
 		// dopoki rozny od zera to rozdawaj innym wierzcholkom polaczenia z obecnym
-		while(size != 0)
+		while (size != 0 && next < typeHelp.size())
 		{
-			// kiedy nastepny jest == 0 to nie moze mu dac polaczenia
-			// sprawdza czy nastepne tez sa rowne 0
-			while (vertexTab[next] == 0 && next < vertexTab.size())
-				next++;
 			// dodaje wlasciwa krawedz do listy sasiedztwa
-			myList.addEdge(i, next);
+			myList.addEdge(typeHelp[i].index, typeHelp[next].index);
 			// zmniejsza stopien obecnego wierzcholka
 			size--;
+			typeHelp[i].degree -= 1;
 			// zmiejsza stopien nastepnego wierzcholka 
-			vertexTab[next] -= 1;
+			typeHelp[next].degree -= 1;
 			// idzie dalej z rozdawaniem polaczen do siebie
 			next++;
 		}
-		
+
+		sort(typeHelp.begin(), typeHelp.end(), cmp);
 	}
 
 	return myList;
